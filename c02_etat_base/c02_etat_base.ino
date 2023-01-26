@@ -6,7 +6,6 @@
 // Auteur : NB 20230126
 
 int appState = 0;  // État de l'application
-int ledState = LOW; // État du LED
 
 void setup() {
   // Initialisation de la comm série
@@ -24,6 +23,7 @@ void setup() {
 // Fonction pour faire clignoter
 void blink() {
   static int counter = 0;
+  static int ledState = LOW; // État du LED
 
   // Nombre aléatoire de clignotement
   static int nbBlinks = random(1, 10);

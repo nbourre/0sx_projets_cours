@@ -47,6 +47,8 @@ void loop() {
   
   btnPrecedent = btnActuel;
   
+  // Cette partie est pour détecter les changements
+  // d'état donc de 0 à 1 et de 1 à 0.
   if (btnEtat == 1 && btnEtatPrec == 0) {
     Serial.println("Bouton relache");
   } else if (btnEtat == 0 && btnEtatPrec == 1) {

@@ -6,7 +6,7 @@ unsigned long serialPrintPrevious = 0;
 int serialPrintInterval = 500;
 String msg = "";
 
-PorteGarage porte(2);
+PorteGarage porte(2, 8, 10, 9, 11);
 
 void setup() {
   Serial.begin(9600);

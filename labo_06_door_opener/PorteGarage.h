@@ -14,7 +14,8 @@
 */
 class PorteGarage {
   public:
-    enum Etat { 
+    enum Etat {
+      NOT_INIT, // Non initialise 
       CALIB, // État de calibration
       OUVERT,
       OUVERTURE,
@@ -33,7 +34,7 @@ class PorteGarage {
     PorteGarage(int pinButton, uint8_t step_pin1, uint8_t step_pin2, uint8_t step_pin3, uint8_t step_pin4) :
                    btn (pinButton), 
                    stepper(AccelStepper::FULL4WIRE, step_pin1, step_pin2, step_pin3, step_pin4) {
-      etat = CALIB;
+      etat = NOT_INIT;
       instance = this;
       btn.attachClick(buttonClick, instance);
     };
@@ -41,22 +42,30 @@ class PorteGarage {
     void ouvrir();
     void fermer();
     void calibrer();
-    Etat getEtat();
-    static void buttonClick(PorteGarage *self);
+    Etat getEtat() { return etat; };
 
     void update();
     
+    // Ajouter les méthodes manquantes si nécessaires
 
   private:
     Etat etat;
     AccelStepper stepper;
     OneButton btn;
+    
     static PorteGarage *instance;
+    
+    static void buttonClick(PorteGarage *self);
+        
+    void calibrerEnter();
+    void calibrerExit();
     
     void ouvrirEnter();
     void ouvrirExit();
     
     void fermerEnter();
     void fermerExit();
+    
+    // Ajouter les méthodes manquantes si nécessaires
         
 };

@@ -10,7 +10,6 @@ PorteGarage porte(2, 8, 10, 9, 11);
 
 void setup() {
   Serial.begin(9600);
-
 }
 
 void loop() {

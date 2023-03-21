@@ -69,10 +69,6 @@ void PorteGarage::calibrer() {
   // Implémentation de la méthode calibrer()
 }
 
-PorteGarage::Etat PorteGarage::getEtat() {
-  return etat;
-}
-
 void PorteGarage::update() {
   // TODO : Complétez la méthode
   // Implémentation de la méthode miseAJour()

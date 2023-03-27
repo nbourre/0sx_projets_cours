@@ -13,9 +13,9 @@ void setup() {
 void loop() {
   if (mode == 0) {
     digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-    delay(250);                      // wait for a second
+    delay(500);                      // wait for a second
     digitalWrite(LED_BUILTIN, LOW);   // turn the LED off by making the voltage LOW
-    delay(250);                      // wait for a second
+    delay(500);                      // wait for a second
     count++;
     
     if (count >= 1) {

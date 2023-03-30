@@ -37,11 +37,15 @@ class PorteGarage {
       etat = NOT_INIT;
       instance = this;
       btn.attachClick(buttonClick, instance);
+
+      // Attention! Le stepper n'est pas configuré. Il faut compléter le code
+      // TODO : Complétez le constructeur     
     };
 
     void ouvrir();
     void fermer();
     void calibrer();
+    void attente();
     Etat getEtat() { return etat; };
 
     void update();
@@ -52,19 +56,18 @@ class PorteGarage {
     Etat etat;
     AccelStepper stepper;
     OneButton btn;
+
+    const int troisTours = 3 * 2038;
     
     static PorteGarage *instance;
     
     static void buttonClick(PorteGarage *self);
         
     void calibrerEnter();
-    void calibrerExit();
     
     void ouvrirEnter();
-    void ouvrirExit();
     
     void fermerEnter();
-    void fermerExit();
     
     // Ajouter les méthodes manquantes si nécessaires
         

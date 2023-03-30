@@ -17,8 +17,8 @@ static void PorteGarage::buttonClick(PorteGarage *self) {
     case FERME:
       self->ouvrirEnter();
       break;
-    case OUVERTURE:
-      self->ouvrir();
+    case FERMETURE:
+      // TODO : Interrompre la fermeture
       break;
     // Réaliser les autres cas
     default:
@@ -35,16 +35,11 @@ void PorteGarage::ouvrir() {
 
 // Préparation à l'ouverture
 void PorteGarage::ouvrirEnter() {
-  
+  // TODO : Complétez la méthode
   // Faire les initialisations et instructions
   // nécessaires pour faire l'ouverture;
   
-  etat = OUVERTURE;      
-}
-
-// Sortie de l'ouverture, i.e. la porte est ouverte.
-void  PorteGarage::ouvrirExit() {
-  etat = OUVERT;  
+  etat = OUVERTURE;
 }
 
 
@@ -52,26 +47,54 @@ void  PorteGarage::ouvrirExit() {
 void PorteGarage::fermer() {
   // TODO : Complétez la méthode
   // Implémentation de la méthode fermer()
+  // Effectuer les 3 tours pour fermer la porte
+  // Lorsque ce sera fait, changer l'état de la porte
+
+  if (stepper.distanceToGo() == 0) {
+    etat = FERME;
+  }
 }
 
 // Préparation à la fermeture
 void PorteGarage::fermerEnter() {
-  
+  stepper.moveTo(-troisTours);
+  etat = FERMETURE;  
 }
 
-// Sortie de l'état FERMETURE
-void PorteGarage::fermerExit() {
-  
-}
-
+// Calibration de la porte
 void PorteGarage::calibrer() {
   // TODO : Complétez la méthode
   // Implémentation de la méthode calibrer()
 }
 
+// Attente d'un événement
+// Il se peut qu'il n'y ait rien à faire dans cette méthode
+void PorteGarage::attente() {
+  // TODO : Complétez la méthode
+}
+
+// Cette méthode doit être appelée à chaque itération de la boucle principale
 void PorteGarage::update() {
   // TODO : Complétez la méthode
-  // Implémentation de la méthode miseAJour()
+  // Implémentation de la méthode update()
+
+  switch (etat) {
+    case OUVERT:
+    case FERME:
+    case NOT_INIT:
+      attente();
+      break;
+    case OUVERTURE:
+      ouvrir();
+      break;
+    case FERMETURE:
+      fermer();
+      break;
+    // Réaliser les autres cas manquants
+    default:
+      break;
+  }
+
   
   
   // Met à jour le bouton

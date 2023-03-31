@@ -1,6 +1,6 @@
 #include <WiFiEspAT.h>
 
-#define HAS_SECRETS 1  // Mettre à 1 si le fichier arduino_secrets.h est présent
+#define HAS_SECRETS 1  // Mettre à 1 pour utiliser arduino_secrets.h
 
 #if HAS_SECRETS
 #include "arduino_secrets.h"

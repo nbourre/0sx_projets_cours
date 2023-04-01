@@ -31,12 +31,18 @@ RingBuffer buf(8);
 
 int ledStatus = 0;
 
+String inputString = "";      // chaîne pour contenir les données reçues
+bool stringComplete = false;  // flag
+
+String atResponse = "";
+bool waitingResponse = false;
+
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
   Serial.begin(115200);
-  while (!Serial)
-    ;
+  while (!Serial);
 
   Serial1.begin(AT_BAUD_RATE);
   WiFi.init(Serial1);
@@ -44,8 +50,7 @@ void setup() {
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("La communication avec le module WiFi a échoué !");
     // ne pas continuer
-    while (true)
-      ;
+    while (true);
   }
 
   // En attendant la connexion au réseau Wifi configuré avec le sketch SetupWiFiConnection
@@ -67,7 +72,12 @@ void setup() {
 }
 
 void loop() {
+  stringManagementTask();
   wifiTask();
+}
+
+void printESPVersion() {
+  Serial.println(WiFi.firmwareVersion());
 }
 
 void wifiTask() {
@@ -121,6 +131,46 @@ void wifiTask() {
     Serial.println("client déconnecté");
   }
 
+}
+
+// Gestion des données reçu du PC
+// RX0 (Port USB)
+void serialEvent() {
+  
+  // While car on reçoit plusieurs caractères à la fois
+  while (Serial.available()) {
+    
+    char inChar = (char)Serial.read();
+
+    inputString += inChar;
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
+}
+
+
+
+// Gestion de la string reçue
+void stringManagementTask() {
+  if (stringComplete) {
+    
+    if (inputString.startsWith("AT")) {
+      // Il s'agit d'une commande AT
+      // On l'envoie au ESP8266
+      Serial1.println(inputString);
+      waitingResponse = true;
+    }
+    
+    if (inputString.startsWith("getVersion")) {
+      printESPVersion();
+    }
+    
+    // On reset le tout
+    inputString = "";
+    stringComplete = false;
+  }
+  
 }
 
 void sendHttpResponse(WiFiClient client) {

@@ -31,6 +31,12 @@ static void PorteGarage::buttonClick(PorteGarage *self) {
 void PorteGarage::ouvrir() {
   // TODO : Complétez la méthode
   // Implémentation de la méthode ouvrir()
+  
+  if (stepper.distanceToGo() == 0) {
+    etat = OUVERT;
+    
+    sendEvent(false);
+  }
 }
 
 // Préparation à l'ouverture
@@ -40,6 +46,8 @@ void PorteGarage::ouvrirEnter() {
   // nécessaires pour faire l'ouverture;
   
   etat = OUVERTURE;
+  
+  sendEvent(true);
 }
 
 
@@ -52,25 +60,39 @@ void PorteGarage::fermer() {
 
   if (stepper.distanceToGo() == 0) {
     etat = FERME;
+    
+    sendEvent(false);
   }
 }
 
 // Préparation à la fermeture
 void PorteGarage::fermerEnter() {
   stepper.moveTo(-troisTours);
-  etat = FERMETURE;  
+  etat = FERMETURE;
+  
+  sendEvent(true);
 }
 
 // Calibration de la porte
 void PorteGarage::calibrer() {
   // TODO : Complétez la méthode
   // Implémentation de la méthode calibrer()
+  
+  // Appeler le callback lorsque la calibration sera
+  // complétée
+  // sendEvent(false);
 }
 
 // Attente d'un événement
 // Il se peut qu'il n'y ait rien à faire dans cette méthode
 void PorteGarage::attente() {
   // TODO : Complétez la méthode
+}
+
+void PorteGarage::sendEvent(bool moving) {
+  if (callback) {
+    callback(moving, "Garage");
+  }
 }
 
 // Cette méthode doit être appelée à chaque itération de la boucle principale

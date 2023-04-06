@@ -37,19 +37,27 @@ class PorteGarage {
       etat = NOT_INIT;
       instance = this;
       btn.attachClick(buttonClick, instance);
+      callback = NULL;
 
       // Attention! Le stepper n'est pas configuré. Il faut compléter le code
       // TODO : Complétez le constructeur     
     };
 
-    void ouvrir();
-    void fermer();
-    void calibrer();
-    void attente();
+
     Etat getEtat() { return etat; };
 
     void update();
     
+    // Méthode pour définir le callback (pointeur de fonction) lorsque l'état de la porte de garage change
+    // En bref, c'est pour déclancher un événement
+    // state 0 --> ne bouge plus
+    // state 1 --> en mouvement
+    
+    PorteGarage &setCallBack(void (*callback)(bool moving, String)) {
+      this->callback = callback;
+      return *this;
+    }
+
     // Ajouter les méthodes manquantes si nécessaires
 
   private:
@@ -61,6 +69,11 @@ class PorteGarage {
     
     static PorteGarage *instance;
     
+    void ouvrir();
+    void fermer();
+    void calibrer();
+    void attente();
+    
     static void buttonClick(PorteGarage *self);
         
     void calibrerEnter();
@@ -68,7 +81,11 @@ class PorteGarage {
     void ouvrirEnter();
     
     void fermerEnter();
+
+    void (*callback)(bool, String);
     
+    void sendEvent(bool);
+
     // Ajouter les méthodes manquantes si nécessaires
         
 };

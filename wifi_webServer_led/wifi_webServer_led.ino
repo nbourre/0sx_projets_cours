@@ -31,8 +31,12 @@ RingBuffer buf(8);
 
 int ledStatus = 0;
 
+const int motorPin = 31;
+int motorStatus = 0;
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(motorPin, OUTPUT);
 
   Serial.begin(115200);
   while (!Serial)
@@ -112,7 +116,16 @@ void wifiTask() {
           digitalWrite(LED_BUILTIN, LOW);
 
           ledStatus = 0;
-        }
+        } else if (buf.endsWith("GET /MF")) {
+          Serial.println("Turn motor OFF");
+          digitalWrite(motorPin, LOW);
+
+          motorStatus = 0;
+        } else if (buf.endsWith("GET /MO")) {
+          Serial.println("Turn motor ON");
+          digitalWrite(motorPin, HIGH);
+          motorStatus = 1;
+        } 
       }
     }
 
@@ -133,8 +146,16 @@ void sendHttpResponse(WiFiClient client) {
   client.println("<br>");
   client.println("<br>");
 
+  client.print("The fan is ");
+  client.print(motorStatus);
+  client.println("<br>");
+  client.println("<br>");
+
   client.println("Click <a href=\"/H\">here</a> turn the LED on<br>");
   client.println("Click <a href=\"/L\">here</a> turn the LED off<br>");
+
+  client.println(F("<p>Click <a href=\"/MO\">here</a> turn the FAN on<br>"));
+  client.println(F("Click <a href=\"/MF\">here</a> turn the FAN off<br></p>"));
 
   // The HTTP response ends with another blank line:
   client.println();

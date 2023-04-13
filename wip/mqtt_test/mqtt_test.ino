@@ -32,6 +32,8 @@ unsigned long currentTime = 0;
 #define DHT_PIN 10
 #define DHT_TYPE DHT11
 
+#define MOTOR_PIN 31
+
 DHT dht(DHT_PIN, DHT_TYPE);
 
 
@@ -115,6 +117,10 @@ void printMacAddress(byte mac[]) {
   Serial.println();
 }
 
+void toggleMoteur() {
+  digitalWrite(MOTOR_PIN, !digitalRead(MOTOR_PIN));
+}
+
 // Gestion des messages reçues de la part du serveur MQTT
 void mqttEvent(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message recu [");
@@ -124,6 +130,10 @@ void mqttEvent(char* topic, byte* payload, unsigned int length) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
+
+  if (strcmp(topic, "moteur") == 0) {
+    toggleMoteur();    
+  }
 }
 
 void periodicTask() {
@@ -170,6 +180,7 @@ bool reconnect() {
 void setup() {
   Serial.begin(115200);
   pinMode (LED_BUILTIN, OUTPUT);
+  pinMode (MOTOR_PIN, OUTPUT);
   
   wifiInit();
   
@@ -181,6 +192,8 @@ void setup() {
     Serial.print("client.state : ");
     Serial.println(client.state());
   }
+
+  client.subscribe("moteur");
 
   dht.begin();
   

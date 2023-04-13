@@ -22,7 +22,7 @@ SoftwareSerial Serial1(6, 7);  // RX, TX
 #define MQTT_PASS "shawi123"
 
 // Serveur MQTT du prof
-const char* server = "216.128.180.194";
+const char* mqttServer = "216.128.180.194";
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
@@ -43,25 +43,34 @@ void wifiInit() {
   
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println();
-    Serial.println("Communication with WiFi module failed!");
-    // don't continue
+    Serial.println("La communication avec le module WiFi a échoué!");
+    // Ne pas continuer
     while (true) {
-      // Clignote rapidement pour annoncer l'erreur
+      // Clignoter rapidement pour annoncer l'erreur
       digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
       delay(50);
     }
   }
   
-  // waiting for connection to Wifi network set with the SetupWiFiConnection sketch
-  Serial.println("Waiting for connection to WiFi");
+  // En attendant la connexion au réseau Wifi configuré avec le sketch SetupWiFiConnection
+  Serial.println("En attente de connexion au WiFi");
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.print('.');
-  } 
-  
+  }
+  Serial.println();
+
+  IPAddress ip = WiFi.localIP();
+  Serial.println();
+  Serial.println("Connecté au réseau WiFi.");
+  Serial.print("Adresse : ");
+  Serial.println(ip);
+
   printWifiStatus();
 }
 
+// Procédure Afficher le status de la connection
+// WiFi sur le port série
 void printWifiStatus() {
 
   // imprimez le SSID du réseau auquel vous êtes connecté:
@@ -137,36 +146,46 @@ void periodicTask() {
   dtostrf(temp, 4, 1, szTemp);
   dtostrf(hum, 4, 1, szHum);
 
-  sprintf(message, "{'temp' : %s, 'hum':%s }", szTemp, szHum);
+  sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s }", "\"Le prof\"", szTemp, szHum);
 
   Serial.print("Envoie : ");
   Serial.println(message);
 
   if (!client.publish("test", message)) {
     Serial.println("Incapable d'envoyer le message!");
+    reconnect();
   } else {
     Serial.println("Message envoyé");
   }
 }
 
+bool reconnect() {
+  bool result = client.connect(DEVICE_NAME, MQTT_USER, MQTT_PASS);
+  if(!result) {
+    Serial.println("Incapable de se connecter sur le serveur MQTT");
+  }
+  return result;
+}
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode (LED_BUILTIN, OUTPUT);
   
   wifiInit();
   
-  client.setServer(server, MQTT_PORT);
+  client.setServer(mqttServer, MQTT_PORT);
   client.setCallback(mqttEvent);
   
   if(!client.connect(DEVICE_NAME, MQTT_USER, MQTT_PASS)) {
     Serial.println("Incapable de se connecter sur le serveur MQTT");
+    Serial.print("client.state : ");
+    Serial.println(client.state());
   }
 
   dht.begin();
   
   // Configuration terminée
-  Serial.println("Setup done");
+  Serial.println("Setup complété");
   delay(1000);
 }
 
@@ -175,5 +194,9 @@ void loop() {
   // Mettre le code à exécuter continuellement
 
   periodicTask();
+
+  // Appeler périodiquement pour maintenir 
+  // la connexion au serveur MQTT
+  client.loop();
 }
 

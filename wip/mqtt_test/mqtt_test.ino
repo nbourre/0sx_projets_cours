@@ -156,7 +156,7 @@ void periodicTask() {
   dtostrf(temp, 4, 1, szTemp);
   dtostrf(hum, 4, 1, szHum);
 
-  sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s }", "\"Le prof\"", szTemp, szHum);
+  sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s, \"millis\":%lu }", "\"Le prof\"", szTemp, szHum, currentTime / 1000);
 
   Serial.print("Envoie : ");
   Serial.println(message);
@@ -193,7 +193,7 @@ void setup() {
     Serial.println(client.state());
   }
 
-  client.subscribe("moteur");
+  client.subscribe("moteur", 1);
 
   dht.begin();
   

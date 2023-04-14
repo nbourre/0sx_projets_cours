@@ -1,6 +1,6 @@
 #include <LiquidCrystal_I2C.h>
 
-class Affichage{
+class Affichage {
   public:
     // Constructeur
     Affichage(uint8_t lcdAddress, uint8_t lcdColumns, uint8_t lcdRows);
@@ -13,29 +13,21 @@ class Affichage{
     int getRefreshRate() { return _refreshRate; }
 
   private:
-    uint8_t _lcdAddress;
-    uint8_t _lcdColumns;
-    uint8_t _lcdRows;
     int _refreshRate = 250;
     String _line1;
     String _line2;
     
-    unsigned long currentTime;
+    unsigned long _currentTime;
     bool _needUpdate = false; // Drapeau pour indiquer si l'affichage doit être mis à jour
     
-    // Remarquez le "&" devant le nom de l'attribut
-    // En C++, lorsque l'on veut définir un attribut qui est un objet à l'intérieur d'une classe,
-    // il faut définir l'attribut comme une référence au type de l'objet. L'objet sera instancié
-    // plus tard dans le code.
-    LiquidCrystal_I2C &_lcd;
+    LiquidCrystal_I2C _lcd;
 };
 
 // Peut être déplacé dans le fichier Affichage.cpp
-Affichage::Affichage(uint8_t lcdAddress, uint8_t lcdColumns, uint8_t lcdRows){
-  _lcdAddress = lcdAddress;
-  _lcdColumns = lcdColumns;
-  _lcdRows = lcdRows;
-  _lcd = LiquidCrystal_I2C(_lcdAddress, _lcdColumns, _lcdRows);
+Affichage::Affichage(uint8_t lcdAddress, uint8_t lcdColumns, uint8_t lcdRows):
+  _lcd (lcdAddress, lcdColumns, lcdRows)
+{
+
   _lcd.init();
   _lcd.backlight();
 }
@@ -65,16 +57,18 @@ void Affichage::clear(){
 
 void Affichage::update(){
   static unsigned long lastUpdate = 0;
-  currentTime = millis();
+  _currentTime = millis();
 
   // On sort de la méthode si le temps entre le dernier rafraîchissement est plus petit que le temps de rafraîchissement
-  if (currentTime - lastUpdate < _refreshRate){
+  if (_currentTime - lastUpdate < _refreshRate){
     return;
   }
 
   if (!_needUpdate){
     return;
   }
+  
+  lastUpdate = _currentTime;
 
   _lcd.clear();
   _lcd.setCursor(0,0);

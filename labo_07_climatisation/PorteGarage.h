@@ -1,20 +1,13 @@
-/*!
- * @file PorteGarage.h
- *
- *
- */
-
+#include "pins_arduino.h"
 #pragma once
 #include <Arduino.h>
 #include <AccelStepper.h>
 #include <OneButton.h>
 
-/*! 
-    @brief  Classe qui contrôle un ouvre-porte de garage à l'aide d'un moteur pas-à-pas 28byj-48 et d'un bouton
-*/
+
 class PorteGarage {
   public:
-    enum Etat {
+    enum Etat { 
       NOT_INIT, // Non initialise 
       CALIB, // État de calibration
       OUVERT,
@@ -23,7 +16,7 @@ class PorteGarage {
       FERMETURE,
       ARRET
     };
-    
+
     /*!
       @brief Constructeur qui permet d'initialiser les différents broches de la porte de garage.
       @param  pinButon
@@ -37,55 +30,64 @@ class PorteGarage {
       etat = NOT_INIT;
       instance = this;
       btn.attachClick(buttonClick, instance);
+      btn.attachLongPressStart(buttonLongPress, instance);
       callback = NULL;
 
-      // Attention! Le stepper n'est pas configuré. Il faut compléter le code
-      // TODO : Complétez le constructeur     
+      pinMode (LED_BUILTIN, OUTPUT);
+      stepper.setMaxSpeed(maxSpeed);
+      stepper.setAcceleration(maxAccel);
     };
-
-
+    
     Etat getEtat() { return etat; };
 
     void update();
+    
+    void printStatus();
     
     // Méthode pour définir le callback (pointeur de fonction) lorsque l'état de la porte de garage change
     // En bref, c'est pour déclencher un événement
     // state 0 --> ne bouge plus
     // state 1 --> en mouvement
-    
     PorteGarage &setCallBack(void (*callback)(bool moving, String)) {
       this->callback = callback;
       return *this;
     }
 
-    // Ajouter les méthodes manquantes si nécessaires
-
   private:
     Etat etat;
-    AccelStepper stepper;
+    Etat previousState;
     OneButton btn;
-
-    const int troisTours = 3 * 2038;
-    
+    AccelStepper stepper;
     static PorteGarage *instance;
+    
+    // Nombre de pas pour un cycle ouvrir/fermer
+    const int nbPasCycle = 2038;
+    const int maxSpeed = 500;
+    const int maxAccel = 500;
+    
+    unsigned long currentTime = 0;
+    
+    bool debug = false;
     
     void ouvrir();
     void fermer();
     void calibrer();
-    void attente();
-    
     static void buttonClick(PorteGarage *self);
-        
-    void calibrerEnter();
+    static void buttonLongPress(PorteGarage *self);
+    void attente();
+    void arret();
     
-    void ouvrirEnter();
-    
+    void ouvrirEnter();    
     void fermerEnter();
-
+    void calibrerEnter();
+    void calibrerExit();
+    
     void (*callback)(bool, String);
     
     void sendEvent(bool);
-
-    // Ajouter les méthodes manquantes si nécessaires
+    
+    void blinkTask();
+    
+    
         
 };

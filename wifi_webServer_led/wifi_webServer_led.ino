@@ -34,6 +34,10 @@ int ledStatus = 0;
 const int motorPin = 31;
 int motorStatus = 0;
 
+String inputString;
+bool stringComplete = false;
+bool waitingResponse = false;
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(motorPin, OUTPUT);
@@ -45,7 +49,7 @@ void setup() {
   WiFi.init(Serial1);
 
   if (WiFi.status() == WL_NO_MODULE) {
-    Serial.println("La communication avec le module WiFi a échoué !");
+    Serial.println("La communication avec le module WiFi a échoué!");
     // ne pas continuer
     while (true);
   }

@@ -3,6 +3,8 @@
 *  Projet : Examples --> WifiEspAT --> Tools --> SetupWifiPersistentConnection
 */
 
+#define HOME 1
+
 #include <WiFiEspAT.h>
 #include <PubSubClient.h>
 #include <DHT.h>
@@ -16,7 +18,12 @@ SoftwareSerial Serial1(6, 7);  // RX, TX
 #define AT_BAUD_RATE 115200
 #endif
 
+#if HOME
+#define DEVICE_NAME "NickHome"
+#else
 #define DEVICE_NAME "NickProf"
+#endif
+
 #define MQTT_PORT 1883
 #define MQTT_USER "etdshawi"
 #define MQTT_PASS "shawi123"
@@ -156,7 +163,11 @@ void periodicTask() {
   dtostrf(temp, 4, 1, szTemp);
   dtostrf(hum, 4, 1, szHum);
 
+#if HOME
+  sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s, \"millis\":%lu }", "\"profHome\"", szTemp, szHum, currentTime / 1000);
+#else
   sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s, \"millis\":%lu }", "\"Le prof\"", szTemp, szHum, currentTime / 1000);
+#endif
 
   Serial.print("Envoie : ");
   Serial.println(message);
@@ -191,6 +202,8 @@ void setup() {
     Serial.println("Incapable de se connecter sur le serveur MQTT");
     Serial.print("client.state : ");
     Serial.println(client.state());
+  } else{
+    Serial.println("Connecté sur le serveur MQTT");
   }
 
   client.subscribe("moteur", 1);

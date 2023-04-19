@@ -31,7 +31,10 @@ SoftwareSerial Serial1(6, 7);  // RX, TX
 // Serveur MQTT du prof
 const char* mqttServer = "216.128.180.194";
 
+// Déclaration du client Wifi
 WiFiClient wifiClient;
+
+// Déclaration du client MQTT
 PubSubClient client(wifiClient);
 
 unsigned long currentTime = 0;
@@ -206,7 +209,7 @@ void setup() {
     Serial.println("Connecté sur le serveur MQTT");
   }
 
-  client.subscribe("moteur", 1);
+  client.subscribe("moteur", 0);
 
   dht.begin();
   

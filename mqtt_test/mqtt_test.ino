@@ -128,7 +128,8 @@ void printMacAddress(byte mac[]) {
 }
 
 void toggleMoteur() {
-  digitalWrite(MOTOR_PIN, !digitalRead(MOTOR_PIN));
+  
+  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 }
 
 // Gestion des messages reçues de la part du serveur MQTT
@@ -175,7 +176,7 @@ void periodicTask() {
   Serial.print("Envoie : ");
   Serial.println(message);
 
-  if (!client.publish("test", message)) {
+  if (!client.publish("etd/08", message)) {
     Serial.println("Incapable d'envoyer le message!");
     reconnect();
   } else {

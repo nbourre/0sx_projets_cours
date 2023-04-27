@@ -153,6 +153,7 @@ void periodicTask() {
   static char szTemp[6];
   static char szHum[6];
   const unsigned int rate = 10000;
+  static short lum = -1;
 
   static float temp = 0;
   static float hum = 0;
@@ -163,12 +164,13 @@ void periodicTask() {
 
   temp = dht.readTemperature();
   hum = dht.readHumidity();
+  lum = map(analogRead(A10), 0, 1023, 0, 4);
 
   dtostrf(temp, 4, 1, szTemp);
   dtostrf(hum, 4, 1, szHum);
 
 #if HOME
-  sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s, \"millis\":%lu }", "\"profHome\"", szTemp, szHum, currentTime / 1000);
+  sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s, \"millis\":%lu, \"lum\":%d }", "\"profHome\"", szTemp, szHum, currentTime / 1000, lum);
 #else
   sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s, \"millis\":%lu }", "\"Le prof\"", szTemp, szHum, currentTime / 1000);
 #endif

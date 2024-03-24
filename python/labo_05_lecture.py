@@ -1,3 +1,21 @@
+"""_summary_
+    Script pour lire les données de l'Arduino et les enregistrer dans un fichier CSV.
+    Le script utilise le module 'serial' pour lire les données de l'Arduino via le port série.
+    Les données sont ensuite enregistrées dans un fichier CSV avec un timestamp pour chaque ligne.
+    Le script utilise le module 'argparse' pour gérer les arguments en ligne de commande.
+    
+    Faire 'Ctrl+C' pour arrêter le script.
+
+    Args:
+        -p, --port: Port de communication avec l'Arduino.
+        -f, --frequency: Fréquence de sauvegarde dans le fichier CSV (en secondes).
+        -b, --baudrate: Vitesse de transmission en bauds.
+        -o, --output: Chemin du fichier de sortie en format CSV.
+        
+Returns:
+    _type_: _description_
+"""
+
 import argparse
 import serial
 import csv

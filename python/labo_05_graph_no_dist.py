@@ -52,8 +52,8 @@ def read_serial_data(port, baudrate, output_file, frequency, last_values):
         # Préparation pour le graphique en direct
         plt.ion()
         fig, ax = plt.subplots(figsize=(10, 6))
-        data_lines = [np.zeros(last_values) for _ in range(4)]  # 4 types de données restantes après retrait de valMin et valMax
-        labels = ["Luminosité (%)", "Distance (cm)", "Température", "Humidité (%)"]
+        data_lines = [np.zeros(last_values) for _ in range(3)]  # 4 types de données restantes après retrait de valMin et valMax
+        labels = ["Luminosité (%)", "Température", "Humidité (%)"]
         lines = [ax.plot(np.arange(-last_values, 0), line, label=label)[0] for line, label in zip(data_lines, labels)]
         ax.legend(loc="upper left")
         ax.set_ylim(0, 100)  # Adapter cette échelle selon vos données réelles
@@ -104,10 +104,9 @@ def parse_data(line):
         # Exemple: Lum:valLum,Dist:dist,T:temp,H:hum
         # Nous supposons ici l'ordre Lum, Dist, Temp, Hum pour correspondre à l'exemple
         valLum = float(parts[0].split(':')[1])
-        dist = float(parts[3].split(':')[1])
         temp = float(parts[4].split(':')[1])
         hum = float(parts[5].split(':')[1])
-        return [valLum, dist, temp, hum]
+        return [valLum, temp, hum]
     except Exception as e:
         print(f"Erreur lors du parsing des données : {e}")
         return [0] * 4  # Retourner une liste de zéros si erreur

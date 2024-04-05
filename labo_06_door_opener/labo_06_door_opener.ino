@@ -13,6 +13,7 @@ void eventMoteur(bool valeur, String quoi) {
   Serial.print (" -- Mouvement : ");
   Serial.println (valeur);
   
+  
   // On pourrait par exemple, mettre en pause
   // un autre moteur pour éviter la surchage ;)
 }

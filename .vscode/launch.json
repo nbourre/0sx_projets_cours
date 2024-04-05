@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["-p", "COM23", "-b", "9600", "-o", "python/arduino_test.csv"]
+            "args": ["-p", "COM6", "-b", "9600", "-o", "python/arduino_test.csv", "-g", "50"]
         }
     ]
 }

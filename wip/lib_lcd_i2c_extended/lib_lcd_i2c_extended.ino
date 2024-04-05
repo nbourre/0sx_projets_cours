@@ -2,15 +2,15 @@
 
 LCD_I2C_Extended lcd (0x27, 16, 2);
 
-char * testCallbacks() {
+const char * testCallbacks() {
   return "Potatoes!";
 }
 
-char * testCallbacks2() {
+const char * testCallbacks2() {
   return "Apple!";
 }
 
-char * testStringCb() {
+const char * testStringCb() {
   static String result = "Mucho potatoes!";
   static char _buff[20] = "";
   result.toCharArray(_buff, result.length());

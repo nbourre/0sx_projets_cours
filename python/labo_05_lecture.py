@@ -57,6 +57,8 @@ def read_serial_data(port, baudrate, output_file, frequency):
                             writer.writerow(data)
                             print(data)  # Affiche les données pour vérification
                             start_time = time.time()
+                    else:
+                        ser.readline()  # Vider le buffer série
                     
     except serial.SerialException as e:
         print(f"Erreur lors de la connexion au port série : {e}")

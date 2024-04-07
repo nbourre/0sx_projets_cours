@@ -70,9 +70,9 @@ def read_serial_data(port, baudrate, output_file, frequency, last_values):
                     current_time = time.time()
                     if current_time - start_time >= frequency:
                         line = ser.readline().decode('utf-8').rstrip()
-                        data = parse_data(line)
+                        error_state, data = parse_data(line)
                         
-                        if data:
+                        if error_state == 1 and data:
                             # Ajouter le timestamp actuel au début des données
                             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                             writer.writerow([timestamp] + data)
@@ -85,6 +85,13 @@ def read_serial_data(port, baudrate, output_file, frequency, last_values):
                                 line.set_ydata(np.roll(line.get_ydata(), -1))
                                 line.set_ydata(np.append(line.get_ydata()[:-1], data[i]))
                             plt.pause(0.001)
+                        elif error_state == 0:
+                            print(line)  # Afficher les commentaires
+                        elif error_state == -1:
+                            print("Données invalides. Veuillez vérifier le format.")
+                            print(line)  # Afficher les données invalides
+                    else:
+                        ser.readline()  # Vider le buffer série
                     
     except serial.SerialException as e:
         print(f"Erreur lors de la connexion au port série : {e}")
@@ -97,8 +104,23 @@ def read_serial_data(port, baudrate, output_file, frequency, last_values):
             print("Port série non disponible")
         print(f"Les données ont été enregistrées dans {output_file}")
 
+
 def parse_data(line):
+    """_summary_
+    Cette fonction analyse une ligne de données de l'Arduino et renvoie un tuple (errorState, tableau de données)
+
+    Args:
+        line (_type_): _description_
+
+    Returns:
+        int: état d'erreur (-1 si erreur, 0 si commentaire, 1 si données valides)
+        list: tableau de données       
+        
+    """
     try:
+        # Si line débute par '//', c'est un commentaire et on ignore la ligne
+        if line.startswith('//'):
+            return 0, [0] * 4
         # Adapter ici pour ignorer valMin et valMax dans votre format de données
         parts = line.split(',')
         # Exemple: Lum:valLum,Dist:dist,T:temp,H:hum
@@ -106,10 +128,10 @@ def parse_data(line):
         valLum = float(parts[0].split(':')[1])
         temp = float(parts[4].split(':')[1])
         hum = float(parts[5].split(':')[1])
-        return [valLum, temp, hum]
+        return 1, [valLum, temp, hum]
     except Exception as e:
         print(f"Erreur lors du parsing des données : {e}")
-        return [0] * 4  # Retourner une liste de zéros si erreur
+        return -1, [0] * 4  # Retourner une liste de zéros si erreur
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Lire les données d'Arduino et les enregistrer dans un fichier CSV.")

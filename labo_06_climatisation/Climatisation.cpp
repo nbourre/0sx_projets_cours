@@ -1,9 +1,10 @@
 #include "Climatisation.h"
 
 // Constructeur
-Climatisation::Climatisation(int pinMotor, int pinLed, int pinDht) : _dht(pinDht, DHTTYPE){
+Climatisation::Climatisation(int pinMotorA, int pinMotorB, int pinLed, int pinDht) : _dht(pinDht, DHTTYPE){
   // Initialisation des attributs
-  _pinMotor = pinMotor;
+  _pinMotorA = pinMotorA;
+  _pinMotorB = pinMotorB;
   _pinLed = pinLed;
   _pinDht = pinDht;
   _onPause = false;

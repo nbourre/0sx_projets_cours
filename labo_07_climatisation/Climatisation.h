@@ -21,6 +21,8 @@ enum MotorState { ON, OFF, PAUSE };
 class Climatisation {
   public:
     // Constructeur
+    // Attention : Il s'agit d'une classe qui utilise un MOSFET pour contrôler le moteur et non le L293D
+    // Prendre l'autre projet pour le L293D
     Climatisation(int pinMotor, int pinLed, int pinDht);
 
     // Méthodes

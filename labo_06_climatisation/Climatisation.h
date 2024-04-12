@@ -21,7 +21,7 @@ enum MotorState { ON, OFF, PAUSE };
 class Climatisation {
   public:
     // Constructeur
-    Climatisation(int pinMotor, int pinLed, int pinDht);
+    Climatisation(int pinMotorA, int pinMotorB, int pinLed, int pinDht);
 
     // Méthodes
     void update();
@@ -35,7 +35,8 @@ class Climatisation {
     // pour ajuster la valeur des attributs _lowTemp et _highTemp
 
 private:
-    int _pinMotor;
+    int _pinMotorA;
+    int _pinMotorB;
     int _pinLed;
     int _pinDht;
     DHT _dht;

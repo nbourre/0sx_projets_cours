@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-chemin_fichier = 'D:\\temp\\eclipse\\ton_fichier.csv'
+chemin_fichier = 'D:\\temp\\eclipse\\prof_2.csv'
 ignore_first_x_rows = 0 # Pour netttoyer les données
 ignore_last_x_rows = 0 # Pour netttoyer les données
 separator = ',' # ',' ou ';'
@@ -26,7 +26,7 @@ data['Timestamp'] = pd.to_datetime(data['Timestamp'])
 # Créer le graphique
 plt.figure(figsize=(10, 6))
 plt.plot(data['Timestamp'], data['Luminosité (%)'])
-plt.title('Luminosité au fil du temps')
+plt.title('Luminosité du Soleil lors de l\'éclipse 2024')
 plt.xlabel('Temps')
 plt.ylabel('Luminosité (%)')
 plt.grid(True)

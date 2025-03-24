@@ -14,20 +14,27 @@ void xState(unsigned long cT) {
   static bool firstTime = true;
 
   if (firstTime) {
-    // Code d'initialisation de l'état
+    // Code d'ENTRÉE c'est le 
+    //   code d'initialisation de l'état
     // Reset tes trucs
-    // Exemples : Angle de référence, initialiser le lastTime;
+    // Exemples : 
+    //   Angle de référence, initialiser le lastTime,
+    //   Chronomètre, etc.
 
     firstTime = false;
     return;
   }
 
+  // Ligne nécessaire si l'on doit temporiser
+  // les appels de cet état
   if (cT - lastTime < rate) return;
 
   lastTime = cT;
 
-  // Code de job à faire
+  // Code d'EXÉCUTION de l'état
+  // Code de la job à faire
 
+  // Code de TRANSITION
   // Il s'agit de la transition qui permet de sortir de l'état
   // Qu'est-ce qui fait que l'on sort de l'état?
   bool transition = false;
@@ -35,9 +42,13 @@ void xState(unsigned long cT) {
   // Il est possible d'avoir plusieurs transitions
 
   if (transition) {
-    // Code pour terminer la tâche
-
+    // Code de SORTIE
+    // Code pour terminer l'état
+   
     firstTime = true;
+    
+    // appState = PROCHAIN_ETAT;
+    
   }
 }
 

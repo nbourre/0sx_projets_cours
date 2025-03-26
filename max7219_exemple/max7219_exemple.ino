@@ -36,6 +36,16 @@ void setup(void) {
   
   position_bits = 0;
   longueur_bits = strlen(message) * LARGEUR_POLICE + largeur_affichage;           // Calculer la longueur du texte en pixels (8 bits par caractère)
+  
+  display.clearBuffer();
+  display.drawLine(0, 0, 7, 7);
+  display.sendBuffer();
+  delay(500);
+  
+  display.clearBuffer();
+  display.drawLine(7, 0, 0, 7);
+  display.sendBuffer();
+  delay(500);
 }
 
 #define TAILLE_TAMPON 12

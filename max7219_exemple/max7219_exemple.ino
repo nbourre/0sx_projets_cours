@@ -33,6 +33,7 @@ void setup(void) {
   
   display.setFont(u8g2_font_4x6_tr); // Choisir une police lisible
   display.setDisplayRotation(U8G2_R0);             // Assurer l’orientation par défaut
+  display.setContrast(5); // Permet d'ajuster la luminosité (contraste) de l'affichage
   
   position_bits = 0;
   longueur_bits = strlen(message) * LARGEUR_POLICE + largeur_affichage;           // Calculer la longueur du texte en pixels (8 bits par caractère)

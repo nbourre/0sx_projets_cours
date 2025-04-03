@@ -74,7 +74,7 @@ void loop()
           // utiliser \r\n au lieu de plusieurs println pour accélérer l'envoi des données
           client.print(
             "HTTP/1.1 200 OK\r\n"
-            "Content-Type: text/html\r\n"
+            "Content-Type: text/html; charset=UTF-8\r\n"
             "Connection: close\r\n"  // la connexion sera fermée après l'achèvement de la réponse
             "Refresh: 20\r\n"        // rafraîchir la page automatiquement toutes les 20 sec
             "\r\n");

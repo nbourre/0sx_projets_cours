@@ -77,7 +77,7 @@ void loop() {
           client.println("HTTP/1.1 200 OK");
 
            // envoyer un en-tête de réponse HTTP
-          client.println("Content-Type: text/html");
+          client.println("Content-Type: text/html; charset=UTF-8");
           client.println();
 
           // Corps du HTML

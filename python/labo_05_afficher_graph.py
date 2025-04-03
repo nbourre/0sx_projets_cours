@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-chemin_fichier = 'D:\\temp\\eclipse\\prof_2.csv'
-ignore_first_x_rows = 0 # Pour netttoyer les données
+chemin_fichier = 'D:\\temp\\eclipse\\Yao_6261946.csv'
+ignore_first_x_rows = 50 # Pour netttoyer les données
 ignore_last_x_rows = 0 # Pour netttoyer les données
 separator = ',' # ',' ou ';'
 encoding = 'ISO-8859-1' # 'utf-8'

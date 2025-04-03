@@ -15,9 +15,12 @@ unsigned long currentTime = 0;
 bool stopFlag = false;
 bool resetFlag = false;
 
+int startValue = 0;
+int endValue = 99;
+
 void appCountingState(unsigned long cT) {
   static unsigned long lastTime = 0;
-  const int rate = 100;
+  const int rate = 1000;
   static bool firstTime = true;
   
   static unsigned int counter = 0;
@@ -25,7 +28,7 @@ void appCountingState(unsigned long cT) {
   if (firstTime) {
     firstTime = false;
 
-    counter = 0;
+    counter = startValue;
     return;
   }
 
@@ -34,6 +37,12 @@ void appCountingState(unsigned long cT) {
   if (cT - lastTime < rate) return;
 
   lastTime = cT;
+
+  counter++;
+  if (counter > endValue) {
+    counter = startValue;
+  }
+  affichage.setMessageFromInt(counter);
   
   bool transition = stopFlag;
 
@@ -46,22 +55,104 @@ void appCountingState(unsigned long cT) {
   
   bool transitionReset = resetFlag;
   if (transition) {
-    
-    appState = STOP; 
+    // Pas de changement d'état, on ne fait que redémarrer l'état
+    firstTime = true; 
     resetFlag = false;
   }
   
+}
+
+void stopState(unsigned long ct){
+  static unsigned long lastTime = 0;
+  const int rate = 30;
+  static bool firstTime = true;
+
+  static int posX = 0;
+  static int dirX = 1;
+  const int maxX = 7;
+  const int maxY = 7;
+  
+  if (firstTime) {
+    firstTime = false;
+    posX = 0;
+  }
+  
+  if (posX < 0 || posX > maxX) {
+    dirX = -dirX;
+  }
+  posX += dirX;
+
+  affichage.getU8G2()->clearBuffer();
+  affichage.getU8G2()->drawLine(posX, 0, posX, maxY);
+  affichage.getU8G2()->sendBuffer();
+
+
 }
 
 void stateManager(unsigned long ct) {
   // Adapter selon votre situation!
   switch (appState) {
     case STOP:
-      
+      stopState(ct);
       break;
     case COUNTING:
       appCountingState(ct);
       break;
+  }
+}
+
+void analyserCommande(const String& tampon, String& commande, int& arg1, int& arg2) {
+  commande = "";
+  arg1 = 0;
+  arg2 = 0;
+
+  int firstSep = tampon.indexOf(';');
+  int secondSep = tampon.indexOf(';', firstSep + 1);
+
+  if (firstSep == -1) {
+    // Pas de point-virgule, c'est peut-être "stop"
+    commande = tampon;
+    return;
+  }
+
+  // Extraire la commande
+  commande = tampon.substring(0, firstSep);
+
+  // Extraire arg1
+  if (secondSep != -1) {
+    String arg1Str = tampon.substring(firstSep + 1, secondSep);
+    arg1 = arg1Str.toInt();
+
+    String arg2Str = tampon.substring(secondSep + 1);
+    arg2 = arg2Str.toInt();
+  } else {
+    // Il y a une seule valeur après la commande
+    String arg1Str = tampon.substring(firstSep + 1);
+    arg1 = arg1Str.toInt();
+  }
+}
+
+
+void serialEvent() {
+  if (Serial.available()) {
+    String tampon = Serial.readStringUntil('\n');
+
+    String commande;
+    int arg1, arg2;
+
+    analyserCommande(tampon, commande, arg1, arg2);
+
+    if (commande == "stop") {
+      stopFlag = true;
+    }
+    
+    if (commande == "cnt") {
+      if (arg1 >= arg2) (
+        // Complete
+      )
+
+    }
+
   }
 }
 

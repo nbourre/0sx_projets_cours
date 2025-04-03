@@ -19,6 +19,10 @@ void Affichage::update() {
       // Ne rien afficher
       break;
 
+    case MESSAGE:
+      messageState();
+      break;
+
     case ERROR:
       errorState();
       break;
@@ -30,6 +34,52 @@ void Affichage::update() {
 
   _u8g2.sendBuffer();
 }
+
+void Affichage::messageState() {
+  static unsigned long lastTime = 0;
+  static unsigned long exitTime = 0;
+  const int rate = 150;  // Vitesse de défilement (ms)
+  static bool firstTime = true;
+  static int xOffset = 8;  // Position de départ (à droite de l’écran)
+
+  if (firstTime) {
+    exitTime = _currentTime + _timeout;
+    xOffset = 8; // Réinitialiser à droite
+    firstTime = false;
+    _resetTimeout = false;
+    return;
+  }
+
+  if (_currentTime - lastTime < rate) return;
+  lastTime = _currentTime;
+
+  _u8g2.drawStr(xOffset, 7, _message);
+
+  xOffset--;
+
+  // Calcul de la largeur du texte
+  int textWidth = _u8g2.getStrWidth(_message);
+
+  if (_resetTimeout) {
+    exitTime = _currentTime + _timeout;
+    _resetTimeout = false;
+  }
+
+  // Transition message complété
+  if (xOffset < -textWidth) {
+    // Le texte a complètement défilé
+    firstTime = true;
+    _currentState = EMPTY;
+  }
+
+  // Transition 3 secondes
+  // Timeout global (en cas de message plus long que prévu)
+  if (_currentTime > exitTime) {
+    firstTime = true;
+    _currentState = EMPTY;
+  }
+}
+
 
 void Affichage::errorState() {
   static unsigned long lastTime = 0;
@@ -69,3 +119,24 @@ void Affichage::badCommandState() {
   _u8g2.drawStr(0, 7, "?");  // Affiche '?' pour commande invalide
   
 }
+
+void Affichage::setMessage(const char* msg) {
+  // Copie sécuritaire du message dans le buffer local
+  strncpy(_message, msg, MSG_SIZE - 1);
+  _message[MSG_SIZE - 1] = '\0'; // S’assurer de la terminaison
+  _currentState = MESSAGE;
+  _resetTimeout = true;
+}
+
+const char* Affichage::getMessage() {
+  return _message;
+}
+
+void Affichage::setMessageFromInt(int value) {
+  char buffer[10];
+  snprintf(buffer, sizeof(buffer), "%d", value);
+  setMessage(buffer); // Utilise ta méthode existante
+  _currentState = MESSAGE;
+  _resetTimeout = true;
+}
+

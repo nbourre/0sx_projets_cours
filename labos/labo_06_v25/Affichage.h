@@ -21,7 +21,8 @@ public:
   void setMessageFromInt(int value);
     
   void update();
-  U8G2* getU8G2() { return &_u8g2; }
+  void init();
+  U8G2* getU8G2() { return _u8g2; }
 
 
 private:
@@ -32,7 +33,7 @@ private:
   bool _resetTimeout = false;
   char _message[MSG_SIZE] = "";
   
-  U8G2_MAX7219_8X8_F_4W_SW_SPI _u8g2;
+  U8G2_MAX7219_8X8_F_4W_SW_SPI*  _u8g2 = nullptr;
 
   
   void errorState();

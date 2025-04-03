@@ -1,18 +1,20 @@
 #include "Affichage.h"
 
 // Constructeur avec initialisation de l'écran
-Affichage::Affichage(int data_pin, int clk_pin, int cs_pin)
-  : _u8g2(U8G2_R0, clk_pin, data_pin, cs_pin, U8X8_PIN_NONE, U8X8_PIN_NONE)
-{
-  _u8g2.begin();
-  _u8g2.setFont(u8g2_font_4x6_tr); // Police adaptée pour un écran 8x8
+Affichage::Affichage(int data_pin, int clk_pin, int cs_pin) {
+  _u8g2 = new U8G2_MAX7219_8X8_F_4W_SW_SPI(U8G2_R0, clk_pin, data_pin, cs_pin, U8X8_PIN_NONE, U8X8_PIN_NONE);
+}
+
+void Affichage::init() {
+  _u8g2->begin();
+  _u8g2->setFont(u8g2_font_4x6_tr);
 }
 
 // Met à jour l'affichage selon l'état courant
 void Affichage::update() {
   _currentTime = millis();
-  
-  _u8g2.clearBuffer();
+
+  _u8g2->clearBuffer();
 
   switch (_currentState) {
     case EMPTY:
@@ -32,7 +34,7 @@ void Affichage::update() {
       break;
   }
 
-  _u8g2.sendBuffer();
+  _u8g2->sendBuffer();
 }
 
 void Affichage::messageState() {
@@ -44,7 +46,7 @@ void Affichage::messageState() {
 
   if (firstTime) {
     exitTime = _currentTime + _timeout;
-    xOffset = 8; // Réinitialiser à droite
+    xOffset = 8;  // Réinitialiser à droite
     firstTime = false;
     _resetTimeout = false;
     return;
@@ -53,12 +55,12 @@ void Affichage::messageState() {
   if (_currentTime - lastTime < rate) return;
   lastTime = _currentTime;
 
-  _u8g2.drawStr(xOffset, 7, _message);
+  _u8g2->drawStr(xOffset, 7, _message);
 
   xOffset--;
 
   // Calcul de la largeur du texte
-  int textWidth = _u8g2.getStrWidth(_message);
+  int textWidth = _u8g2->getStrWidth(_message);
 
   if (_resetTimeout) {
     exitTime = _currentTime + _timeout;
@@ -100,30 +102,28 @@ void Affichage::errorState() {
   if (_currentTime - lastTime < rate) return;
 
   lastTime = _currentTime;
-  
-  _u8g2.drawStr(0, 7, "E");  // Affiche 'E' pour Error
+
+  _u8g2->drawStr(0, 7, "E");  // Affiche 'E' pour Error
 
   bool transition = _currentTime > exitTime;
 
 
   if (transition) {
-       
+
     firstTime = true;
     _currentState = EMPTY;
-    
   }
 }
 
 void Affichage::badCommandState() {
   // TODO : À compléter
-  _u8g2.drawStr(0, 7, "?");  // Affiche '?' pour commande invalide
-  
+  _u8g2->drawStr(0, 7, "?");  // Affiche '?' pour commande invalide
 }
 
 void Affichage::setMessage(const char* msg) {
   // Copie sécuritaire du message dans le buffer local
   strncpy(_message, msg, MSG_SIZE - 1);
-  _message[MSG_SIZE - 1] = '\0'; // S’assurer de la terminaison
+  _message[MSG_SIZE - 1] = '\0';  // S’assurer de la terminaison
   _currentState = MESSAGE;
   _resetTimeout = true;
 }
@@ -135,8 +135,7 @@ const char* Affichage::getMessage() {
 void Affichage::setMessageFromInt(int value) {
   char buffer[10];
   snprintf(buffer, sizeof(buffer), "%d", value);
-  setMessage(buffer); // Utilise ta méthode existante
+  setMessage(buffer);  // Utilise ta méthode existante
   _currentState = MESSAGE;
   _resetTimeout = true;
 }
-

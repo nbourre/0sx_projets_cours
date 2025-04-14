@@ -18,7 +18,8 @@ void Affichage::update() {
 
   switch (_currentState) {
     case EMPTY:
-      // Ne rien afficher
+    case IDLE:
+      idleState();
       break;
 
     case MESSAGE:
@@ -71,12 +72,44 @@ void Affichage::messageState() {
   if (xOffset < -textWidth) {
     // Le texte a complètement défilé
     firstTime = true;
-    _currentState = EMPTY;
+    _currentState = IDLE;
   }
 
   // Transition 3 secondes
   // Timeout global (en cas de message plus long que prévu)
   if (_currentTime > exitTime) {
+    firstTime = true;
+    _currentState = IDLE;
+  }
+}
+
+void Affichage::idleState() {
+  static unsigned long lastTime = 0;
+  static unsigned long exitTime = 0;
+  const int rate = 100;
+
+  static bool firstTime = true;
+
+  if (firstTime) {
+    exitTime = _currentTime + _timeout;
+
+    firstTime = false;
+    return;
+  }
+
+  // Ligne nécessaire si l'on doit temporiser
+  // les appels de cet état
+  if (_currentTime - lastTime < rate) return;
+
+  lastTime = _currentTime;
+
+  _u8g2->drawStr(0, 7, "I");  // Affiche 'E' pour Error
+
+  bool transition = _currentTime > exitTime;
+
+
+  if (transition) {
+
     firstTime = true;
     _currentState = EMPTY;
   }
@@ -111,7 +144,7 @@ void Affichage::errorState() {
   if (transition) {
 
     firstTime = true;
-    _currentState = EMPTY;
+    _currentState = IDLE;
   }
 }
 

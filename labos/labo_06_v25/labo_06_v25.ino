@@ -92,7 +92,7 @@ void stopState(unsigned long ct) {
   posX += dirX;
 
   // fix me!
-  affichage.getU8G2()->drawLine(posX, 0, posX, maxY);
+  
 
 
   bool transition = countCmdFlag;

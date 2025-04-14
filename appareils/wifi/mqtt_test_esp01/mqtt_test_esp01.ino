@@ -5,7 +5,7 @@
 
 #define HOME 1
 
-#include <WiFiEspAT.h>
+#include <WiFiEsp.h>
 #include <PubSubClient.h>
 #include <DHT.h>
 
@@ -25,7 +25,7 @@
 const char* mqttServer = "216.128.180.194";
 
 // Déclaration du client Wifi
-WiFiClient wifiClient;
+WiFiEspClient wifiClient;
 
 // Déclaration du client MQTT
 PubSubClient client(wifiClient);
@@ -43,10 +43,10 @@ DHT dht(DHT_PIN, DHT_TYPE);
 void wifiInit() {
   // Initialisation du module WiFi.
   Serial1.begin(AT_BAUD_RATE);
-  WiFi.init(Serial1);
+  WiFi.init(&Serial1);
 
   
-  if (WiFi.status() == WL_NO_MODULE) {
+  if (WiFi.status() == WL_NO_SHIELD) {
     Serial.println();
     Serial.println("La communication avec le module WiFi a échoué!");
     // Ne pas continuer
@@ -79,10 +79,8 @@ void wifiInit() {
 void printWifiStatus() {
 
   // imprimez le SSID du réseau auquel vous êtes connecté:
-  char ssid[33];
-  WiFi.SSID(ssid);
   Serial.print("SSID: ");
-  Serial.println(ssid);
+  Serial.println(WiFi.SSID());
 
   // imprimez le BSSID du réseau auquel vous êtes connecté:
   uint8_t bssid[6];

@@ -17,6 +17,11 @@
 #define DEVICE_NAME "NickProf"
 #endif
 
+const char ssid[] = "TechniquesInformatique-Etudiant";  // your network SSID (name)
+const char pass[] = "shawi123";                         // your network password (use for WPA, or use as key for WEP)
+
+int status = WL_IDLE_STATUS;     // Status du module wifi
+
 #define MQTT_PORT 1883
 #define MQTT_USER "etdshawi"
 #define MQTT_PASS "shawi123"
@@ -56,13 +61,20 @@ void wifiInit() {
       delay(50);
     }
   }
+
   
   // En attendant la connexion au réseau Wifi configuré avec le sketch SetupWiFiConnection
-  Serial.println("En attente de connexion au WiFi");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print('.');
+  Serial.print("En attente de connexion au WiFi : ");
+  Serial.println(ssid);
+
+  // Tentative de connexion au Wifi
+  while (status != WL_CONNECTED) {
+    Serial.print(".");
+
+    // Connecter au ssid
+    status = WiFi.begin(ssid, pass);
   }
+  
   Serial.println();
 
   IPAddress ip = WiFi.localIP();

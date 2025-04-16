@@ -6,7 +6,7 @@
 
 class Affichage {
 public:
-  enum State {EMPTY, ERROR, BAD_COMMAND, MESSAGE};
+  enum State {EMPTY, ERROR, BAD_COMMAND, MESSAGE, IDLE};
   
   Affichage (int data_pin, int clk_pin, int cs_pin);
   
@@ -34,11 +34,10 @@ private:
   char _message[MSG_SIZE] = "";
   
   U8G2_MAX7219_8X8_F_4W_SW_SPI*  _u8g2 = nullptr;
-
   
   void errorState();
   void badCommandState();
   void messageState();
-  
+  void idleState();
   
 };

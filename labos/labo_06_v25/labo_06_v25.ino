@@ -73,26 +73,28 @@ void stopState(unsigned long ct) {
 
   static int posX = 0;
   static int dirX = 1;
+  const int minX = 0;
   const int maxX = 7;
   const int maxY = 7;
 
   if (firstTime) {
     firstTime = false;
-    posX = 0;
+    posX = minX + 1;
+    dirX = 1;
   }
   
   if (ct - lastTime < rate) return;
   lastTime = ct;
 
-  
-
-  if (posX < 0 || posX > maxX) {
+  if (posX <= 0 || posX >= maxX) {
     dirX = -dirX;
   }
   posX += dirX;
 
   // fix me!
+  affichage.getU8G2()->clearBuffer();
   affichage.getU8G2()->drawLine(posX, 0, posX, maxY);
+  affichage.getU8G2()->sendBuffer();
 
 
   bool transition = countCmdFlag;
@@ -113,14 +115,12 @@ void stateManager(unsigned long ct) {
       appCountingState(ct);
       break;
   }
-
-
 }
 
-void analyserCommande(const String& tampon, String& commande, int& arg1, int& arg2) {
+void analyserCommande(const String& tampon, String& commande, String& arg1, String& arg2) {
   commande = "";
-  arg1 = 0;
-  arg2 = 0;
+  arg1 = "";
+  arg2 = "";
 
   int firstSep = tampon.indexOf(';');
   int secondSep = tampon.indexOf(';', firstSep + 1);
@@ -136,15 +136,12 @@ void analyserCommande(const String& tampon, String& commande, int& arg1, int& ar
 
   // Extraire arg1
   if (secondSep != -1) {
-    String arg1Str = tampon.substring(firstSep + 1, secondSep);
-    arg1 = arg1Str.toInt();
+    arg1 = tampon.substring(firstSep + 1, secondSep);
 
-    String arg2Str = tampon.substring(secondSep + 1);
-    arg2 = arg2Str.toInt();
+    arg2 = tampon.substring(secondSep + 1);
   } else {
     // Il y a une seule valeur après la commande
-    String arg1Str = tampon.substring(firstSep + 1);
-    arg1 = arg1Str.toInt();
+    arg1 = tampon.substring(firstSep + 1);
   }
 }
 
@@ -156,7 +153,7 @@ void serialEvent() {
   Serial.println("Réception : " + tampon);
 
   String commande;
-  int arg1, arg2;
+  String arg1, arg2;
 
   analyserCommande(tampon, commande, arg1, arg2);
 
@@ -171,8 +168,8 @@ void serialEvent() {
   }
 
   if (commande == "cnt") {
-    startValue = arg1;
-    endValue = arg2;
+    startValue = arg1.toInt();
+    endValue = arg2.toInt();
     countCmdFlag = true;
     Serial.println("cmd : count");
   }
@@ -194,7 +191,7 @@ void loop() {
   heartBeatTask(currentTime);
   //serialPrintTask(currentTime);
 
-  affichage.update();
+  //affichage.update();
 }
 
 void heartBeatTask(unsigned long ct) {

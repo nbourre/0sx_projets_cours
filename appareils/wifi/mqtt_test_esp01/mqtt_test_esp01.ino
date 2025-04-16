@@ -206,7 +206,7 @@ void setup() {
   client.subscribe("moteur", 0);
 
   dht.begin();
-  
+  d:\_data\projets\_cegep\0sx\0sx_projets_cours\labos\labo_06_v25\labo_06_v25.ino
   // Configuration terminée
   Serial.println("Setup complété");
   delay(1000);

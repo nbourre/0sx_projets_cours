@@ -13,8 +13,9 @@
 
 #include "WiFiEsp.h"
 
-char ssid[] = "Twim";            // le nom de votre réseau (SSID)
-char pass[] = "12345678";        // le mot de passe de votre réseau
+const char ssid[] = "TechniquesInformatique-Etudiant";  // your network SSID (name)
+const char pass[] = "shawi123";                         // your network password (use for WPA, or use as key for WEP)
+
 int status = WL_IDLE_STATUS;     // l'état de la radio WiFi
 int reqCount = 0;                // nombre de requêtes reçues
 
@@ -26,9 +27,9 @@ void setup()
   // initialiser le port série pour le débogage
   Serial.begin(115200);
   // initialiser le port série pour le module ESP
-  Serial3.begin(115200);
+  Serial1.begin(115200);
   // initialiser le module ESP
-  WiFi.init(&Serial3);
+  WiFi.init(&Serial1);
 
   // vérifier la présence du module
   if (WiFi.status() == WL_NO_SHIELD) {

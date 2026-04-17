@@ -3,7 +3,7 @@
 *  Projet : Examples --> WifiEspAT --> Tools --> SetupWifiPersistentConnection
 */
 
-#define HOME 1
+#define HOME 0
 
 #include <WiFiEspAT.h>
 #include <PubSubClient.h>
@@ -14,7 +14,7 @@
 #if HOME
 #define DEVICE_NAME "NickHome"
 #else
-#define DEVICE_NAME "NickProf"
+#define DEVICE_NAME "Bureau"
 #endif
 
 #define MQTT_PORT 1883
@@ -163,15 +163,15 @@ void periodicTask() {
   dtostrf(hum, 4, 1, szHum);
 
 #if HOME
-  sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s, \"millis\":%lu, \"lum\":%d }", "\"profHome\"", szTemp, szHum, currentTime / 1000, lum);
+  sprintf(message, "{\"name\":\"%s\",\"number\":666, \"temp\" : %s, \"hum\":%s, \"uptime\":%lu, \"lum\":%d }", DEVICE_NAME, szTemp, szHum, currentTime / 1000, lum);
 #else
-  sprintf(message, "{\"name\":%s, \"temp\" : %s, \"hum\":%s, \"millis\":%lu }", "\"Le prof\"", szTemp, szHum, currentTime / 1000);
+  sprintf(message, "{\"name\":\"%s\", \"temp\" : %s, \"hum\":%s, \"uptime\":%lu }", DEVICE_NAME, szTemp, szHum, currentTime / 1000);
 #endif
 
   Serial.print("Envoie : ");
   Serial.println(message);
 
-  if (!client.publish("etd/08", message)) {
+  if (!client.publish("etd/0", message)) {
     Serial.println("Incapable d'envoyer le message!");
     reconnect();
   } else {

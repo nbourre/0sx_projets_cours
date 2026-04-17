@@ -3,13 +3,14 @@
 *  Projet : Examples --> WifiEspAT --> Tools --> SetupWifiPersistentConnection
 */
 
-#define HOME 1
+#define HOME 0
 
 #include <WiFiEsp.h>
 #include <PubSubClient.h>
 #include <DHT.h>
 
 #define AT_BAUD_RATE 115200
+const int MAX_RECONNECT_ATTEMPTS = 5;
 
 #if HOME
 #define DEVICE_NAME "NickHome"
@@ -40,7 +41,7 @@ unsigned long currentTime = 0;
 #define DHT_PIN 10
 #define DHT_TYPE DHT11
 
-#define MOTOR_PIN 31
+#define MOTOR_PIN LED_BUILTIN
 
 DHT dht(DHT_PIN, DHT_TYPE);
 
@@ -150,6 +151,14 @@ void mqttEvent(char* topic, byte* payload, unsigned int length) {
   }
 }
 
+bool reconnect() {
+  if(!client.connect(DEVICE_NAME, MQTT_USER, MQTT_PASS)) {
+    Serial.print("Erreur de connexion MQTT, code : ");
+    Serial.println(client.state());
+  }
+  return client.connected();
+}
+
 void periodicTask() {
   static unsigned long lastTime = 0;
   static char message[100] = "";
@@ -160,6 +169,7 @@ void periodicTask() {
 
   static float temp = 0;
   static float hum = 0;
+  const char * topic = "etd/08";
 
   if (currentTime - lastTime < rate) return;
 
@@ -181,21 +191,15 @@ void periodicTask() {
   Serial.print("Envoie : ");
   Serial.println(message);
 
-  if (!client.publish("etd/08", message)) {
+  if (!client.publish(topic, message)) {
     Serial.println("Incapable d'envoyer le message!");
-    reconnect();
-  } else {
+  }
+  else {
     Serial.println("Message envoyé");
   }
 }
 
-bool reconnect() {
-  bool result = client.connect(DEVICE_NAME, MQTT_USER, MQTT_PASS);
-  if(!result) {
-    Serial.println("Incapable de se connecter sur le serveur MQTT");
-  }
-  return result;
-}
+
 
 void setup() {
   Serial.begin(115200);
@@ -227,11 +231,29 @@ void setup() {
 void loop() {
   currentTime = millis();
   // Mettre le code à exécuter continuellement
+  checkConnectionTask(currentTime);
 
   periodicTask();
 
   // Appeler périodiquement pour maintenir 
   // la connexion au serveur MQTT
   client.loop();
+
+}
+
+// Regarde la connexion avec le serveur périodiquement
+void checkConnectionTask(unsigned long ct) {
+  static unsigned long lastTime = 0;
+  unsigned long rate = 1000;
+  
+  if (ct - lastTime < rate) {
+    return;
+  }
+  lastTime = ct;
+  
+  // Faire le code de la tâche ici
+  if (reconnect()) {
+    lastTime = 0;
+  }  
 }
 

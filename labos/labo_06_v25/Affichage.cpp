@@ -8,6 +8,7 @@ Affichage::Affichage(int data_pin, int clk_pin, int cs_pin) {
 void Affichage::init() {
   _u8g2->begin();
   _u8g2->setFont(u8g2_font_4x6_tr);
+  _u8g2->setContrast(5);
 }
 
 // Met à jour l'affichage selon l'état courant
